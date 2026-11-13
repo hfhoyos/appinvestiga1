@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Formulación de Proyectos de Investigación</title>
+
+<style>
+:root{
+    --color-primary:#2563eb;
+    --color-primary-light:#dbeafe;
+    --color-success:#16a34a;
+    --color-success-light:#dcfce7;
+    --color-danger:#dc2626;
+    --color-warning:#d97706;
+    --color-bg:#f4f7fc;
+    --color-surface:#ffffff;
+    --color-text:#1e293b;
+    --color-text-soft:#64748b;
+    --color-border:#e2e8f0;
+    --radius-sm:8px;
+    --radius-md:12px;
+    --radius-lg:18px;
+    --shadow-sm:0 2px 6px rgba(0,0,0,.08);
+    --shadow-md:0 6px 18px rgba(0,0,0,.10);
+    --font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font-family);background:var(--color-bg);color:var(--color-text);min-height:100vh;}
+main{max-width:1400px;margin:auto;padding:24px;}
+
+/* HEADER */
+.building-header{text-align:center;margin-bottom:30px;}
+.building-title{font-size:2rem;margin-bottom:10px;}
+.building-subtitle{color:var(--color-text-soft);}
+
+/* NAV */
+.app-nav{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:20px;margin-bottom:30px;box-shadow:var(--shadow-sm);}
+.app-nav__title{margin-bottom:20px;}
+.app-nav__progress{margin-bottom:20px;}
+.app-nav__progress-header{display:flex;justify-content:space-between;margin-bottom:10px;font-size:.9rem;}
+.app-nav__progress-track{height:12px;background:#e5e7eb;border-radius:999px;overflow:hidden;}
+.app-nav__progress-fill{height:100%;width:0%;background:var(--color-success);transition:.3s ease;}
+.app-nav__cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;}
+.nav-card{border:none;background:#f8fafc;padding:15px;border-radius:var(--radius-md);cursor:pointer;transition:.2s;font-family:inherit;font-size:.92rem;text-align:left;}
+.nav-card:hover{background:var(--color-primary-light);}
+.nav-card--active{background:var(--color-primary);color:white;}
+.nav-card--done{box-shadow:inset 3px 0 0 var(--color-success);}
+
+/* FLOOR / ROOM */
+.floor{margin-bottom:30px;}
+.room{display:none;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:25px;box-shadow:var(--shadow-sm);}
+.room--visible{display:block;}
+.room-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:20px;}
+.room-title{font-size:1.2rem;}
+.badge-construction{background:#fff7ed;color:#c2410c;border:1px solid #fdba74;padding:6px 12px;border-radius:999px;font-size:.85rem;font-weight:600;}
+.badge-ok{background:var(--color-success-light);color:#166534;border:1px solid #86efac;padding:6px 12px;border-radius:999px;font-size:.85rem;font-weight:600;}
+.badge-err{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:6px 12px;border-radius:999px;font-size:.85rem;font-weight:600;}
+
+.placeholder-card{margin-top:25px;padding:40px 20px;border:2px dashed var(--color-border);border-radius:var(--radius-md);text-align:center;color:var(--color-text-soft);background:#fafafa;}
+
+/* FORM */
+.form-group{margin-bottom:18px;}
+.form-label{display:block;font-weight:600;margin-bottom:8px;font-size:.92rem;}
+.form-input,.form-textarea{width:100%;padding:12px 14px;border:1px solid var(--color-border);border-radius:var(--radius-sm);font-family:inherit;font-size:.95rem;background:#fbfdff;transition:.15s;}
+.form-input:focus,.form-textarea:focus{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px var(--color-primary-light);}
+.form-textarea{min-height:120px;resize:vertical;}
+.form-hint{font-size:.82rem;color:var(--color-text-soft);margin-top:6px;}
+
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border:none;border-radius:var(--radius-sm);font-family:inherit;font-size:.92rem;font-weight:600;cursor:pointer;transition:.15s;}
+.btn-primary{background:var(--color-primary);color:white;}
+.btn-primary:hover{background:#1d4ed8;}
+.btn-primary:disabled{background:#93c5fd;cursor:not-allowed;}
+.btn-ghost{background:#f1f5f9;color:var(--color-text);}
+.btn-ghost:hover{background:#e2e8f0;}
+.btn-success{background:var(--color-success);color:white;}
+.btn-success:hover{background:#15803d;}
+.btn-danger{background:var(--color-danger);color:white;}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+
+/* DROPZONE */
+.dropzone{border:2px dashed var(--color-border);border-radius:var(--radius-md);padding:40px 20px;text-align:center;background:#fafafa;cursor:pointer;transition:.15s;}
+.dropzone:hover,.dropzone.drag-over{border-color:var(--color-primary);background:var(--color-primary-light);}
+.dropzone__icon{font-size:2.4rem;margin-bottom:10px;}
+.dropzone__text{color:var(--color-text-soft);font-size:.92rem;}
+.file-list{margin-top:16px;display:flex;flex-direction:column;gap:8px;}
+.file-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:#f8fafc;border:1px solid var(--color-border);border-radius:var(--radius-sm);font-size:.88rem;}
+.file-item__name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.file-item__size{color:var(--color-text-soft);font-size:.8rem;flex-shrink:0;}
+.file-item__remove{background:none;border:none;color:var(--color-danger);cursor:pointer;font-size:1.1rem;padding:2px 6px;}
+
+/* STATUS */
+.status-box{padding:12px 16px;border-radius:var(--radius-sm);font-size:.9rem;margin-top:12px;}
+.status-ok{background:var(--color-success-light);color:#166534;border:1px solid #86efac;}
+.status-err{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;}
+.status-info{background:var(--color-primary-light);color:#1e40af;border:1px solid #93c5fd;}
+
+/* MAPA */
+.map-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-top:18px;}
+.map-item{position:relative;border:1px solid var(--color-border);border-radius:var(--radius-sm);overflow:hidden;background:#f8fafc;aspect-ratio:1;}
+.map-item img{width:100%;height:100%;object-fit:cover;display:block;}
+.map-item__remove{position:absolute;top:6px;right:6px;background:rgba(220,38,38,.9);color:white;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:.9rem;line-height:1;}
+
+/* INTERVIEW */
+.interview-output{background:#f8fafc;border:1px solid var(--color-border);border-radius:var(--radius-md);padding:18px;margin-top:16px;font-size:.92rem;line-height:1.6;white-space:pre-wrap;}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid #93c5fd;border-top-color:var(--color-primary);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.empty-note{color:var(--color-text-soft);font-style:italic;font-size:.88rem;}
+
+@media(max-width:600px){
+    .building-title{font-size:1.4rem;}
+    main{padding:14px;}
+    .room{padding:16px;}
+}
+</style>
+</head>
+<body>
+
+<main>
+
+<header class="building-header">
+    <h1 class="building-title">Sistema de Formulación de Proyectos de Investigación</h1>
+    <p class="building-subtitle">PMV • Arquitectura DDD tipo edificio • Con IA</p>
+</header>
+
+<nav id="app-navigation" class="app-nav">
+    <h2 class="app-nav__title">🏢 Mapa del Proyecto</h2>
+    <div class="app-nav__progress">
+        <div class="app-nav__progress-header">
+            <span>Progreso General</span>
+            <span id="progress-percentage">0%</span>
+        </div>
+        <div class="app-nav__progress-track">
+            <div id="progress-bar" class="app-nav__progress-fill"></div>
+        </div>
+    </div>
+    <div class="app-nav__cards" id="nav-cards"></div>
+</nav>
+
+<section id="rooms-container">
+
+    <!-- CONFIGURACIÓN IA -->
+    <article id="room-config-ia" class="room" data-title="⚙️ Configuración IA">
+        <div class="room-header">
+            <h2 class="room-title">Configuración IA</h2>
+            <span id="ia-status-badge" class="badge-construction">Sin validar</span>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="api-key-input">API Key de OpenAI</label>
+            <input type="password" id="api-key-input" class="form-input" placeholder="sk-..." autocomplete="off">
+            <p class="form-hint">La clave se guarda solo en tu navegador (localStorage). Nunca se envía a otro servidor que no sea OpenAI.</p>
+        </div>
+        <div class="btn-row">
+            <button class="btn btn-primary" id="btn-validate-key">✓ Validar y guardar</button>
+            <button class="btn btn-ghost" id="btn-clear-key">Eliminar clave</button>
+        </div>
+        <div id="ia-status-box"></div>
+    </article>
+
+    <!-- CARGAR PROYECTO -->
+    <article id="room-cargar-proyecto" class="room" data-title="📂 Cargar proyecto">
+        <div class="room-header">
+            <h2 class="room-title">Cargar proyecto</h2>
+            <span class="badge-construction">Procesamiento local + IA</span>
+        </div>
+        <p class="form-hint" style="margin-bottom:16px;">
+            Arrastra uno o varios archivos (PDF, DOCX, TXT). Se extraerá el texto y, si hay una API key válida, la IA repartirá el contenido en las habitaciones correspondientes (Título, Problema, Justificación, Referente Conceptual, Objetivos, Metodología, Cronograma, Bibliografía).
+        </p>
+        <div class="dropzone" id="dz-proyecto">
+            <div class="dropzone__icon">📄</div>
+            <div class="dropzone__text">Arrastra archivos aquí o haz clic para seleccionar</div>
+            <input type="file" id="file-proyecto" multiple accept=".pdf,.docx,.txt,.doc" hidden>
+        </div>
+        <div class="file-list" id="list-proyecto"></div>
+        <div class="btn-row">
+            <button class="btn btn-primary" id="btn-procesar-proyecto" disabled>⚡ Procesar y distribuir</button>
+            <button class="btn btn-ghost" id="btn-limpiar-proyecto">Limpiar lista</button>
+        </div>
+        <div id="proyecto-status-box"></div>
+    </article>
+
+    <!-- TÍTULO -->
+    <article id="room-titulo" class="room" data-title="📌 Título">
+        <div class="room-header">
+            <h2 class="room-title">Título del Proyecto</h2>
+            <span id="badge-titulo" class="badge-construction">Vacío</span>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="input-titulo">Título</label>
+            <input type="text" id="input-titulo" class="form-input" data-field="titulo" placeholder="Escribe el título del proyecto...">
+        </div>
+    </article>
+
+    <!-- PROBLEMA -->
+    <article id="room-planteamiento" class="room" data-title="❓ Problema">
+        <div class="room-header">
+            <h2 class="room-title">Planteamiento y Formulación del Problema</h2>
+            <span id="badge-planteamiento" class="badge-construction">Vacío</span>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="input-planteamiento">Planteamiento del problema</label>
+            <textarea id="input-planteamiento" class="form-textarea" data-field="planteamiento" placeholder="Describe el problema..."></textarea>
+        </div>
+    </article>
+
+    <!-- JUSTIFICACIÓN -->
+    <article id="room-justificacion-antecedentes" class="room" data-title="📚 Justificación">
+        <div class="room-header">
+            <h2 class="room-title">Justificación y Antecedentes</h2>
+            <span id="badge-justificacion" class="badge-construction">Vacío</span>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="input-justificacion">Justificación y antecedentes</label>
+            <textarea id="input-justificacion" class="form-textarea" data-field="justificacion" placeholder="Justificación y antecedentes..."></textarea>
+        </div>
+    </article>
+
+    <!-- REFERENTE -->
+    <article id="room-referente-conceptual" class="room" data-title="🧠 Referente Conceptual">
+        <div class="room-header">
+            <h2 class="room-title">Referente Conceptual</h2>
+            <span id="badge-referente" class="badge-construction">Vacío</span>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="input-referente">Marco / referente conceptual</label>
+            <textarea id="input-referente" class="form-textarea" data-field="referente" placeholder="Referente conceptual..."></textarea>
+        </div>
+    </article>
+
+    <!-- OBJETIVOS -->
+    <article id="room-objetivos" class="room" data-title="🎯 Objetivos">
+        <div class="room-header">
+            <h2 class="room-title">Objetivos</h2>
+            <span id="badge-objetivos" class="badge-construction">Vacío</span>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="input-objetivos">Objetivos (general y específicos)</label>
+            <textarea id="input-objetivos" class="form-textarea" data-field="objetivos" placeholder="Objetivo general y específicos..."></textarea>
+        </div>
+    </article>
+
+    <!-- METODOLOGÍA -->
+    <article id="room-metodologia" class="room" data-title="🔬 Metodología">
+        <div class="room-header">
+            <h2 class="room-title">Metodología</h2>
+            <span id="badge-metodologia" class="badge-construction">Vacío</span>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="input-metodologia">Metodología</label>
+            <textarea id="input-metodologia" class="form-textarea" data-field="metodologia" placeholder="Enfoque, tipo, diseño, técnicas e instrumentos..."></textarea>
+        </div>
+    </article>
+
+    <!-- CRONOGRAMA -->
+    <article id="room-cronograma" class="room" data-title="📅 Cronograma">
+        <div class="room-header">
+            <h2 class="room-title">Cronograma</h2>
+            <span id="badge-cronograma" class="badge-construction">Vacío</span>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="input-cronograma">Cronograma</label>
+            <textarea id="input-cronograma" class="form-textarea" data-field="cronograma" placeholder="Fases, actividades y tiempos..."></textarea>
+        </div>
+    </article>
+
+    <!-- BIBLIOGRAFÍA -->
+    <article id="room-bibliografia" class="room" data-title="📖 Bibliografía">
+        <div class="room-header">
+            <h2 class="room-title">Bibliografía</h2>
+            <span id="badge-bibliografia" class="badge-construction">Vacío</span>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="input-bibliografia">Bibliografía</label>
+            <textarea id="input-bibliografia" class="form-textarea" data-field="bibliografia" placeholder="Referencias..."></textarea>
+        </div>
+    </article>
+
+    <!-- MAPA DE LA INVESTIGACIÓN -->
+    <article id="room-mapa" class="room" data-title="🗺️ Mapa de la investigación">
+        <div class="room-header">
+            <h2 class="room-title">Mapa de la investigación</h2>
+            <span class="badge-construction">Imágenes</span>
+        </div>
+        <div class="dropzone" id="dz-mapa">
+            <div class="dropzone__icon">🖼️</div>
+            <div class="dropzone__text">Arrastra imágenes PNG o JPG aquí o haz clic</div>
+            <input type="file" id="file-mapa" multiple accept=".png,.jpg,.jpeg,image/png,image/jpeg" hidden>
+        </div>
+        <div class="map-grid" id="mapa-grid"></div>
+    </article>
+
+    <!-- ENTREVISTAS -->
+    <article id="room-entrevistas" class="room" data-title="🎙️ Entrevistas">
+        <div class="room-header">
+            <h2 class="room-title">Entrevistas</h2>
+            <span class="badge-construction">Texto + IA</span>
+        </div>
+        <p class="form-hint" style="margin-bottom:16px;">
+            Arrastra archivos de texto (.txt) con las respuestas de las entrevistas. Se unificarán en un solo corpus y la IA generará una síntesis.
+        </p>
+        <div class="dropzone" id="dz-entrevistas">
+            <div class="dropzone__icon">📝</div>
+            <div class="dropzone__text">Arrastra archivos .txt aquí o haz clic</div>
+            <input type="file" id="file-entrevistas" multiple accept=".txt,text/plain" hidden>
+        </div>
+        <div class="file-list" id="list-entrevistas"></div>
+        <div class="btn-row">
+            <button class="btn btn-primary" id="btn-sintetizar" disabled>🤖 Unificar y sintetizar con IA</button>
+            <button class="btn btn-ghost" id="btn-limpiar-entrevistas">Limpiar</button>
+        </div>
+        <div id="entrevistas-status-box"></div>
+        <div class="interview-output" id="entrevistas-output" hidden></div>
+    </article>
+
+    <!-- RESUMEN EJECUTIVO -->
+    <article id="room-resumen-ejecutivo" class="room" data-title="📝 Resumen Ejecutivo">
+        <div class="room-header">
+            <h2 class="room-title">Resumen Ejecutivo</h2>
+            <span id="badge-resumen" class="badge-construction">Vacío</span>
+        </div>
+        <p class="form-hint" style="margin-bottom:16px;">
+            Genera el resumen general a partir del contenido de las demás habitaciones usando IA.
+        </p>
+        <div class="btn-row" style="margin-bottom:14px;">
+            <button class="btn btn-success" id="btn-generar-resumen">🤖 Generar resumen con IA</button>
+        </div>
+        <div id="resumen-status-box"></div>
+        <div class="form-group" style="margin-top:14px;">
+            <label class="form-label" for="input-resumen">Resumen ejecutivo</label>
+            <textarea id="input-resumen" class="form-textarea" data-field="resumen" placeholder="El resumen generado aparecerá aquí..." style="min-height:220px;"></textarea>
+        </div>
+    </article>
+
+</section>
+
+</main>
+
+<!-- PDF.js desde CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+if (window.pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+}
+</script>
+
+<!-- Mammoth para DOCX -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+
+<script>
+/* ==================================================
+   FOUNDATION
+================================================== */
+const Foundation = {
+    STORAGE_KEY: "research-project-state-v2",
+
+    rooms: [
+        "room-config-ia",
+        "room-cargar-proyecto",
+        "room-titulo",
+        "room-planteamiento",
+        "room-justificacion-antecedentes",
+        "room-referente-conceptual",
+        "room-objetivos",
+        "room-metodologia",
+        "room-cronograma",
+        "room-bibliografia",
+        "room-mapa",
+        "room-entrevistas",
+        "room-resumen-ejecutivo"
+    ],
+
+    contentRooms: [
+        "room-titulo","room-planteamiento",
+        "room-justificacion-antecedentes","room-referente-conceptual",
+        "room-objetivos","room-metodologia",
+        "room-cronograma","room-bibliografia",
+        "room-resumen-ejecutivo"
+    ],
+
+    state: {
+        currentRoom: "room-config-ia",
+        completedRooms: [],
+        apiKey: "",
+        fields: {
+            titulo:"", planteamiento:"", justificacion:"",
+            referente:"", objetivos:"", metodologia:"",
+            cronograma:"", bibliografia:"", resumen:""
+        }
+    },
+
+    init() {
+        this.load();
+        this.buildNav();
+        this.bindEvents();
+        this.bindFields();
+        this.showRoom(this.state.currentRoom);
+        this.refreshAllBadges();
+        this.updateProgress();
+        this.restoreApiKeyUI();
+    },
+
+    buildNav() {
+        const container = document.getElementById("nav-cards");
+        container.innerHTML = "";
+        this.rooms.forEach(id => {
+            const room = document.getElementById(id);
+            if (!room) return;
+            const btn = document.createElement("button");
+            btn.className = "nav-card";
+            btn.dataset.room = id;
+            btn.textContent = room.dataset.title || id;
+            container.appendChild(btn);
+        });
+    },
+
+    bindEvents() {
+        document.querySelectorAll(".nav-card").forEach(card => {
+            card.addEventListener("click", () => this.showRoom(card.dataset.room));
+        });
+    },
+
+    bindFields() {
+        document.querySelectorAll("[data-field]").forEach(el => {
+            const field = el.dataset.field;
+            el.value = this.state.fields[field] || "";
+            el.addEventListener("input", () => {
+                this.state.fields[field] = el.value;
+                this.save();
+                this.refreshBadge(field);
+                this.updateProgress();
+            });
+        });
+    },
+
+    showRoom(roomId) {
+        document.querySelectorAll(".room").forEach(r => r.classList.remove("room--visible"));
+        const target = document.getElementById(roomId);
+        if (target) target.classList.add("room--visible");
+
+        document.querySelectorAll(".nav-card").forEach(c => {
+            c.classList.toggle("nav-card--active", c.dataset.room === roomId);
+        });
+
+        this.state.currentRoom = roomId;
+        this.save();
+    },
+
+    isRoomComplete(roomId) {
+        if (roomId === "room-config-ia") return !!this.state.apiKey;
+        if (roomId === "room-resumen-ejecutivo") {
+            return !!(this.state.fields.resumen && this.state.fields.resumen.trim().length > 30);
+        }
+        const fieldMap = {
+            "room-titulo":"titulo",
+            "room-planteamiento":"planteamiento",
+            "room-justificacion-antecedentes":"justificacion",
+            "room-referente-conceptual":"referente",
+            "room-objetivos":"objetivos",
+            "room-metodologia":"metodologia",
+            "room-cronograma":"cronograma",
+            "room-bibliografia":"bibliografia"
+        };
+        const f = fieldMap[roomId];
+        if (!f) return false;
+        const v = (this.state.fields[f] || "").trim();
+        return v.length > 20;
+    },
+
+    refreshBadge(field) {
+        const map = {
+            titulo:"badge-titulo",
+            planteamiento:"badge-planteamiento",
+            justificacion:"badge-justificacion",
+            referente:"badge-referente",
+            objetivos:"badge-objetivos",
+            metodologia:"badge-metodologia",
+            cronograma:"badge-cronograma",
+            bibliografia:"badge-bibliografia",
+            resumen:"badge-resumen"
+        };
+        const badge = document.getElementById(map[field]);
+        if (!badge) return;
+        const v = (this.state.fields[field] || "").trim();
+        if (v.length > 20) {
+            badge.className = "badge-ok";
+            badge.textContent = "✓ Completado";
+        } else if (v.length > 0) {
+            badge.className = "badge-construction";
+            badge.textContent = "En progreso";
+        } else {
+            badge.className = "badge-construction";
+            badge.textContent = "Vacío";
+        }
+    },
+
+    refreshAllBadges() {
+        Object.keys(this.state.fields).forEach(f => this.refreshBadge(f));
+    },
+
+    updateProgress() {
+        const trackable = [
+            "room-titulo","room-planteamiento",
+            "room-justificacion-antecedentes","room-referente-conceptual",
+            "room-objetivos","room-metodologia",
+            "room-cronograma","room-bibliografia",
+            "room-resumen-ejecutivo"
+        ];
+        const completed = trackable.filter(id => this.isRoomComplete(id)).length;
+        const percentage = Math.round((completed / trackable.length) * 100);
+        document.getElementById("progress-bar").style.width = percentage + "%";
+        document.getElementById("progress-percentage").textContent = percentage + "%";
+
+        document.querySelectorAll(".nav-card").forEach(c => {
+            c.classList.toggle("nav-card--done", trackable.includes(c.dataset.room) && this.isRoomComplete(c.dataset.room));
+        });
+    },
+
+    save() {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.state));
+    },
+
+    load() {
+        const stored = localStorage.getItem(this.STORAGE_KEY);
+        if (!stored) return;
+        try {
+            const parsed = JSON.parse(stored);
+            if (parsed && typeof parsed === "object") {
+                this.state = Object.assign({}, this.state, parsed);
+                this.state.fields = Object.assign(
+                    { titulo:"", planteamiento:"", justificacion:"", referente:"",
+                      objetivos:"", metodologia:"", cronograma:"", bibliografia:"", resumen:"" },
+                    parsed.fields || {}
+                );
+            }
+        } catch (e) {
+            console.error("Error cargando estado:", e);
+        }
+    },
+
+    restoreApiKeyUI() {
+        const input = document.getElementById("api-key-input");
+        if (this.state.apiKey) {
+            input.value = this.state.apiKey;
+            this.setIABadge(true);
+        }
+    },
+
+    setIABadge(ok, msg) {
+        const badge = document.getElementById("ia-status-badge");
+        if (!badge) return;
+        if (ok) {
+            badge.className = "badge-ok";
+            badge.textContent = "✓ Validada";
+        } else {
+            badge.className = "badge-err";
+            badge.textContent = "✗ Inválida";
+        }
+    }
+};
+
+/* ==================================================
+   IA — CLIENTE OPENAI
+================================================== */
+const AIClient = {
+    baseURL: "https://api.openai.com/v1",
+    model: "gpt-4o-mini",
+
+    async validateKey(key) {
+        const res = await fetch(`${this.baseURL}/models`, {
+            headers: { "Authorization": `Bearer ${key}` }
+        });
+        if (!res.ok) throw new Error("Clave inválida (HTTP " + res.status + ")");
+        return true;
+    },
+
+    async chat(messages, opts = {}) {
+        const key = Foundation.state.apiKey;
+        if (!key) throw new Error("No hay API key configurada.");
+        const res = await fetch(`${this.baseURL}/chat/completions`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${key}`
+            },
+            body: JSON.stringify({
+                model: this.model,
+                messages,
+                temperature: opts.temperature ?? 0.3,
+                max_tokens: opts.max_tokens ?? 1500
+            })
+        });
+        if (!res.ok) {
+            const err = await res.text();
+            throw new Error("Error API (" + res.status + "): " + err.slice(0, 200));
+        }
+        const data = await res.json();
+        return data.choices?.[0]?.message?.content?.trim() || "";
+    }
+};
+
+/* ==================================================
+   CONFIGURACIÓN IA
+================================================== */
+const ConfigIA = {
+    init() {
+        document.getElementById("btn-validate-key").addEventListener("click", () => this.validate());
+        document.getElementById("btn-clear-key").addEventListener("click", () => this.clear());
+    },
+
+    async validate() {
+        const input = document.getElementById("api-key-input");
+        const box = document.getElementById("ia-status-box");
+        const key = input.value.trim();
+        if (!key) {
+            box.innerHTML = '<div class="status-box status-err">Ingresa una API key.</div>';
+            Foundation.setIABadge(false);
+            return;
+        }
+        if (!key.startsWith("sk-")) {
+            box.innerHTML = '<div class="status-box status-err">La clave debe comenzar con "sk-".</div>';
+            Foundation.setIABadge(false);
+            return;
+        }
+        box.innerHTML = '<div class="status-box status-info"><span class="spinner"></span> Validando contra OpenAI...</div>';
+        try {
+            await AIClient.validateKey(key);
+            Foundation.state.apiKey = key;
+            Foundation.save();
+            Foundation.setIABadge(true);
+            box.innerHTML = '<div class="status-box status-ok">✓ Clave válida y guardada.</div>';
+            Foundation.updateProgress();
+        } catch (e) {
+            Foundation.state.apiKey = "";
+            Foundation.save();
+            Foundation.setIABadge(false);
+            box.innerHTML = `<div class="status-box status-err">✗ ${e.message}</div>`;
+        }
+    },
+
+    clear() {
+        Foundation.state.apiKey = "";
+        Foundation.save();
+        document.getElementById("api-key-input").value = "";
+        document.getElementById("ia-status-box").innerHTML =
+            '<div class="status-box status-info">Clave eliminada.</div>';
+        Foundation.setIABadge(false);
+        Foundation.updateProgress();
+    }
+};
+
+/* ==================================================
+   EXTRACTORES DE TEXTO
+================================================== */
+const Extractors = {
+    async fromFile(file) {
+        const name = file.name.toLowerCase();
+        if (name.endsWith(".pdf")) return this.fromPDF(file);
+        if (name.endsWith(".docx")) return this.fromDOCX(file);
+        if (name.endsWith(".txt") || name.endsWith(".md")) return this.fromTXT(file);
+        if (name.endsWith(".doc")) throw new Error("Formato .doc antiguo no soportado. Convierte a .docx o .txt.");
+        throw new Error("Formato no soportado: " + file.name);
+    },
+
+    fromTXT(file) {
+        return new Promise((resolve, reject) => {
+            const r = new FileReader();
+            r.onload = () => resolve(String(r.result || ""));
+            r.onerror = () => reject(new Error("Error leyendo " + file.name));
+            r.readAsText(file);
+        });
+    },
+
+    async fromPDF(file) {
+        const buf = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+        let text = "";
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const content = await page.getTextContent();
+            text += content.items.map(it => it.str).join(" ") + "\n";
+        }
+        return text;
+    },
+
+    async fromDOCX(file) {
+        const buf = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer: buf });
+        return result.value || "";
+    }
+};
+
+/* ==================================================
+   CARGAR PROYECTO
+================================================== */
+const CargarProyecto = {
+    files: [],
+
+    init() {
+        const dz = document.getElementById("dz-proyecto");
+        const input = document.getElementById("file-proyecto");
+        const list = document.getElementById("list-proyecto");
+        const btn = document.getElementById("btn-procesar-proyecto");
+
+        dz.addEventListener("click", () => input.click());
+        input.addEventListener("change", e => this.addFiles(e.target.files));
+        this.wireDropzone(dz, files => this.addFiles(files));
+
+        btn.addEventListener("click", () => this.process());
+
+        document.getElementById("btn-limpiar-proyecto").addEventListener("click", () => {
+            this.files = [];
+            list.innerHTML = "";
+            btn.disabled = true;
+            document.getElementById("proyecto-status-box").innerHTML = "";
+        });
+
+        list.addEventListener("click", e => {
+            if (e.target.matches(".file-item__remove")) {
+                const idx = Number(e.target.dataset.idx);
+                this.files.splice(idx, 1);
+                this.renderList();
+            }
+        });
+    },
+
+    wireDropzone(el, onFiles) {
+        ["dragenter","dragover"].forEach(ev =>
+            el.addEventListener(ev, e => { e.preventDefault(); el.classList.add("drag-over"); }));
+        ["dragleave","drop"].forEach(ev =>
+            el.addEventListener(ev, e => { e.preventDefault(); el.classList.remove("drag-over"); }));
+        el.addEventListener("drop", e => {
+            const files = Array.from(e.dataTransfer.files || []);
+            if (files.length) onFiles(files);
+        });
+    },
+
+    addFiles(fileList) {
+        Array.from(fileList).forEach(f => this.files.push(f));
+        this.renderList();
+    },
+
+    renderList() {
+        const list = document.getElementById("list-proyecto");
+        list.innerHTML = "";
+        this.files.forEach((f, i) => {
+            const item = document.createElement("div");
+            item.className = "file-item";
+            item.innerHTML = `
+                <div style="display:flex;gap:10px;align-items:center;overflow:hidden;">
+                    <span>📄</span>
+                    <span class="file-item__name">${this.escape(f.name)}</span>
+                </div>
+                <div style="display:flex;gap:10px;align-items:center;">
+                    <span class="file-item__size">${this.humanSize(f.size)}</span>
+                    <button class="file-item__remove" data-idx="${i}">✕</button>
+                </div>`;
+            list.appendChild(item);
+        });
+        document.getElementById("btn-procesar-proyecto").disabled = this.files.length === 0;
+    },
+
+    escape(s) {
+        return String(s).replace(/[&<>"']/g, c =>
+            ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]));
+    },
+
+    humanSize(b) {
+        if (b < 1024) return b + " B";
+        if (b < 1048576) return (b / 1024).toFixed(1) + " KB";
+        return (b / 1048576).toFixed(1) + " MB";
+    },
+
+    async process() {
+        const box = document.getElementById("proyecto-status-box");
+        if (!Foundation.state.apiKey) {
+            box.innerHTML = '<div class="status-box status-err">Configura primero la API key en "Configuración IA".</div>';
+            return;
+        }
+        box.innerHTML = '<div class="status-box status-info"><span class="spinner"></span> Extrayendo texto de los archivos...</div>';
+        try {
+            let fullText = "";
+            for (const f of this.files) {
+                try {
+                    const t = await Extractors.fromFile(f);
+                    fullText += `\n\n===== ${f.name} =====\n${t}`;
+                } catch (e) {
+                    fullText += `\n\n[No se pudo leer ${f.name}: ${e.message}]`;
+                }
+            }
+            if (!fullText.trim()) throw new Error("No se extrajo texto de los archivos.");
+            if (fullText.length > 20000) fullText = fullText.slice(0, 20000);
+
+            box.innerHTML = '<div class="status-box status-info"><span class="spinner"></span> Distribuyendo contenido con IA...</div>';
+            const distrib = await this.distributeWithAI(fullText);
+            this.applyDistribution(distrib);
+            box.innerHTML = '<div class="status-box status-ok">✓ Contenido distribuido en las habitaciones. Revisa cada módulo.</div>';
+            Foundation.refreshAllBadges();
+            Foundation.updateProgress();
+        } catch (e) {
+            box.innerHTML = `<div class="status-box status-err">✗ ${this.escape(e.message)}</div>`;
+        }
+    },
+
+    async distributeWithAI(text) {
+        const sys = "Eres un asistente experto en formulación de proyectos de investigación. " +
+            "Recibirás el texto de uno o varios documentos. Debes repartirlo en las siguientes secciones. " +
+            "Responde SOLO con un JSON válido, sin markdown, con estas claves exactas: " +
+            "titulo, planteamiento, justificacion, referente, objetivos, metodologia, cronograma, bibliografia. " +
+            "Cada valor es un string con el contenido correspondiente extraído del texto. " +
+            "Si una sección no aparece, deja el string vacío. No inventes contenido que no esté en el texto.";
+        const user = "Texto del proyecto:\n\n" + text;
+        const raw = await AIClient.chat(
+            [{ role: "system", content: sys }, { role: "user", content: user }],
+            { temperature: 0.2, max_tokens: 3000 }
+        );
+        const clean = raw.replace(/^```json\s*/i, "").replace(/```$/i, "").trim();
+        try {
+            return JSON.parse(clean);
+        } catch (e) {
+            const m = clean.match(/\{[\s\S]*\}/);
+            if (m) return JSON.parse(m[0]);
+            throw new Error("La IA no devolvió un JSON válido.");
+        }
+    },
+
+    applyDistribution(d) {
+        const map = {
+            titulo: "titulo", planteamiento: "planteamiento",
+            justificacion: "justificacion", referente: "referente",
+            objetivos: "objetivos", metodologia: "metodologia",
+            cronograma: "cronograma", bibliografia: "bibliografia"
+        };
+        Object.keys(map).forEach(k => {
+            if (d[k]) Foundation.state.fields[map[k]] = String(d[k]);
+        });
+        Foundation.save();
+        document.querySelectorAll("[data-field]").forEach(el => {
+            el.value = Foundation.state.fields[el.dataset.field] || "";
+        });
+    }
+};
+
+/* ==================================================
+   MAPA DE LA INVESTIGACIÓN
+================================================== */
+const Mapa = {
+    images: [],
+
+    init() {
+        const dz = document.getElementById("dz-mapa");
+        const input = document.getElementById("file-mapa");
+        dz.addEventListener("click", () => input.click());
+        input.addEventListener("change", e => this.addFiles(e.target.files));
+        CargarProyecto.wireDropzone(dz, files => this.addFiles(files));
+        document.getElementById("mapa-grid").addEventListener("click", e => {
+            if (e.target.matches(".map-item__remove")) {
+                const idx = Number(e.target.dataset.idx);
+                URL.revokeObjectURL(this.images[idx].url);
+                this.images.splice(idx, 1);
+                this.render();
+            }
+        });
+    },
+
+    addFiles(files) {
+        Array.from(files).forEach(f => {
+            if (!/^image\/(png|jpeg|jpg)$/.test(f.type)) return;
+            this.images.push({ name: f.name, url: URL.createObjectURL(f) });
+        });
+        this.render();
+    },
+
+    render() {
+        const grid = document.getElementById("mapa-grid");
+        grid.innerHTML = "";
+        this.images.forEach((img, i) => {
+            const item = document.createElement("div");
+            item.className = "map-item";
+            item.innerHTML = `
+                <img src="${img.url}" alt="${CargarProyecto.escape(img.name)}">
+                <button class="map-item__remove" data-idx="${i}" title="Quitar">✕</button>`;
+            grid.appendChild(item);
+        });
+        if (this.images.length === 0) {
+            grid.innerHTML = '<div class="empty-note">Aún no hay imágenes cargadas.</div>';
+        }
+    }
+};
+
+/* ==================================================
+   ENTREVISTAS
+================================================== */
+const Entrevistas = {
+    files: [],
+
+    init() {
+        const dz = document.getElementById("dz-entrevistas");
+        const input = document.getElementById("file-entrevistas");
+        dz.addEventListener("click", () => input.click());
+        input.addEventListener("change", e => this.addFiles(e.target.files));
+        CargarProyecto.wireDropzone(dz, files => this.addFiles(files));
+
+        document.getElementById("list-entrevistas").addEventListener("click", e => {
+            if (e.target.matches(".file-item__remove")) {
+                const idx = Number(e.target.dataset.idx);
+                this.files.splice(idx, 1);
+                this.renderList();
+            }
+        });
+
+        document.getElementById("btn-limpiar-entrevistas").addEventListener("click", () => {
+            this.files = [];
+            this.renderList();
+            document.getElementById("entrevistas-output").hidden = true;
+            document.getElementById("entrevistas-status-box").innerHTML = "";
+        });
+
+        document.getElementById("btn-sintetizar").addEventListener("click", () => this.synthesize());
+    },
+
+    addFiles(fileList) {
+        Array.from(fileList).forEach(f => {
+            if (!/\.txt$/i.test(f.name) && f.type !== "text/plain") return;
+            this.files.push(f);
+        });
+        this.renderList();
+    },
+
+    renderList() {
+        const list = document.getElementById("list-entrevistas");
+        list.innerHTML = "";
+        this.files.forEach((f, i) => {
+            const item = document.createElement("div");
+            item.className = "file-item";
+            item.innerHTML = `
+                <div style="display:flex;gap:10px;align-items:center;overflow:hidden;">
+                    <span>📝</span>
+                    <span class="file-item__name">${CargarProyecto.escape(f.name)}</span>
+                </div>
+                <div style="display:flex;gap:10px;align-items:center;">
+                    <span class="file-item__size">${CargarProyecto.humanSize(f.size)}</span>
+                    <button class="file-item__remove" data-idx="${i}">✕</button>
+                </div>`;
+            list.appendChild(item);
+        });
+        document.getElementById("btn-sintetizar").disabled = this.files.length === 0;
+    },
+
+    async synthesize() {
+        const box = document.getElementById("entrevistas-status-box");
+        const out = document.getElementById("entrevistas-output");
+        out.hidden = true;
+
+        if (!Foundation.state.apiKey) {
+            box.innerHTML = '<div class="status-box status-err">Configura primero la API key en "Configuración IA".</div>';
+            return;
+        }
+        box.innerHTML = '<div class="status-box status-info"><span class="spinner"></span> Unificando y sintetizando respuestas...</div>';
+        try {
+            let corpus = "";
+            for (const f of this.files) {
+                const t = await Extractors.fromFile(f);
+                corpus += `\n\n===== ${f.name} =====\n${t}`;
+            }
+            if (corpus.length > 20000) corpus = corpus.slice(0, 20000);
+
+            const sys = "Eres un analista cualitativo experto. Recibirás transcripciones de entrevistas. " +
+                "Genera una síntesis estructurada con: 1) Temas principales, 2) Patrones y coincidencias, " +
+                "3) Citas representativas, 4) Hallazgos clave, 5) Conclusiones. " +
+                "Escribe en español, de forma clara y profesional.";
+            const user = "Transcripciones unificadas:\n\n" + corpus;
+
+            const result = await AIClient.chat(
+                [{ role: "system", content: sys }, { role: "user", content: user }],
+                { temperature: 0.4, max_tokens: 2000 }
+            );
+            out.textContent = result;
+            out.hidden = false;
+            box.innerHTML = '<div class="status-box status-ok">✓ Síntesis generada.</div>';
+        } catch (e) {
+            box.innerHTML = `<div class="status-box status-err">✗ ${CargarProyecto.escape(e.message)}</div>`;
+        }
+    }
+};
+
+/* ==================================================
+   RESUMEN EJECUTIVO
+================================================== */
+const Resumen = {
+    init() {
+        document.getElementById("btn-generar-resumen").addEventListener("click", () => this.generate());
+    },
+
+    async generate() {
+        const box = document.getElementById("resumen-status-box");
+        if (!Foundation.state.apiKey) {
+            box.innerHTML = '<div class="status-box status-err">Configura primero la API key en "Configuración IA".</div>';
+            return;
+        }
+        const f = Foundation.state.fields;
+        const parts = [];
+        if (f.titulo) parts.push("TÍTULO:\n" + f.titulo);
+        if (f.planteamiento) parts.push("PROBLEMA:\n" + f.planteamiento);
+        if (f.justificacion) parts.push("JUSTIFICACIÓN:\n" + f.justificacion);
+        if (f.referente) parts.push("REFERENTE CONCEPTUAL:\n" + f.referente);
+        if (f.objetivos) parts.push("OBJETIVOS:\n" + f.objetivos);
+        if (f.metodologia) parts.push("METODOLOGÍA:\n" + f.metodologia);
+        if (f.cronograma) parts.push("CRONOGRAMA:\n" + f.cronograma);
+        if (f.bibliografia) parts.push("BIBLIOGRAFÍA:\n" + f.bibliografia);
+
+        if (parts.length === 0) {
+            box.innerHTML = '<div class="status-box status-err">No hay contenido para resumir. Llena al menos una habitación.</div>';
+            return;
+        }
+        const content = parts.join("\n\n").slice(0, 18000);
+        box.innerHTML = '<div class="status-box status-info"><span class="spinner"></span> Generando resumen ejecutivo con IA...</div>';
+        try {
+            const sys = "Eres un asistente experto en formulación de proyectos de investigación. " +
+                "Genera un resumen ejecutivo claro, profesional y conciso (máximo 400 palabras) " +
+                "que integre el título, problema, justificación, objetivos, metodología y cronograma. " +
+                "Escribe en español, en prosa continua, sin listas.";
+            const user = "Contenido del proyecto:\n\n" + content;
+            const result = await AIClient.chat(
+                [{ role: "system", content: sys }, { role: "user", content: user }],
+                { temperature: 0.4, max_tokens: 1200 }
+            );
+            Foundation.state.fields.resumen = result;
+            document.getElementById("input-resumen").value = result;
+            Foundation.save();
+            Foundation.refreshBadge("resumen");
+            Foundation.updateProgress();
+            box.innerHTML = '<div class="status-box status-ok">✓ Resumen generado y guardado.</div>';
+        } catch (e) {
+            box.innerHTML = `<div class="status-box status-err">✗ ${CargarProyecto.escape(e.message)}</div>`;
+        }
+    }
+};
+
+/* ==================================================
+   BOOT
+================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+    Foundation.init();
+    ConfigIA.init();
+    CargarProyecto.init();
+    Mapa.init();
+    Entrevistas.init();
+    Resumen.init();
+});
+</script>
+
+</body>
+</html>
